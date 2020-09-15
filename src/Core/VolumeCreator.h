@@ -21,8 +21,7 @@
 #include <errno.h>
 #endif
 
-#define VC_MIN_LARGE_BTRFS_VOLUME_SIZE 114294784ULL
-#define VC_MIN_SMALL_BTRFS_VOLUME_SIZE 16777216ULL
+#define VC_MIN_BTRFS_VOLUME_SIZE 114294784ULL
 
 namespace VeraCrypt
 {

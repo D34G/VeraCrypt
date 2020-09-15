@@ -258,10 +258,7 @@ namespace VeraCrypt
 
 		case Step::FormatOptions:
 			{
-				shared_ptr <VolumeLayout> layout ((OuterVolume || SelectedVolumeType != VolumeType::Hidden)? (VolumeLayout*) new VolumeLayoutV2Normal() : (VolumeLayout*) new VolumeLayoutV2Hidden());
-				uint64 filesystemSize = layout->GetMaxDataSize (VolumeSize);
-
-				VolumeFormatOptionsWizardPage *page = new VolumeFormatOptionsWizardPage (GetPageParent(), filesystemSize, SectorSize,
+				VolumeFormatOptionsWizardPage *page = new VolumeFormatOptionsWizardPage (GetPageParent(), VolumeSize, SectorSize,
 					SelectedVolumePath.IsDevice() && (OuterVolume || SelectedVolumeType != VolumeType::Hidden), OuterVolume, LargeFilesSupport);
 
 				page->SetPageTitle (_("Format Options"));
@@ -487,9 +484,6 @@ namespace VeraCrypt
 
 					shared_ptr <VolumeInfo> volume = Core->MountVolume (mountOptions);
 					finally_do_arg (shared_ptr <VolumeInfo>, volume, { Core->DismountVolume (finally_arg, true); });
-					
-					shared_ptr <VolumeLayout> layout((volume->Type == VolumeType::Normal)? (VolumeLayout*) new VolumeLayoutV2Normal() : (VolumeLayout*) new VolumeLayoutV2Hidden());
-					uint64 filesystemSize = layout->GetMaxDataSize (VolumeSize);
 
 					Thread::Sleep (2000);	// Try to prevent race conditions caused by OS
 
@@ -533,14 +527,7 @@ namespace VeraCrypt
 						args.push_back ("-f");
 
 					if (SelectedFilesystemType == VolumeCreationOptions::FilesystemType::Btrfs)
-					{
 						args.push_back ("-f");
-						if (filesystemSize < VC_MIN_LARGE_BTRFS_VOLUME_SIZE)
-						{
-							// use mixed mode for small BTRFS volumes
-							args.push_back ("-M");
-						}
-					}
 
 					args.push_back (string (virtualDevice));
 
